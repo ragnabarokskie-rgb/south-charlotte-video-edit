@@ -95,7 +95,7 @@ GitHub blocks any file over **100 MB** and warns above 50 MB, so keep clips to
 
 ---
 
-## Playback behaviour
+## Playback behavior
 
 - Screenshots load as soon as the page does, shown whole and never cropped.
   Tapping one opens it full screen; Escape or a tap anywhere closes it.
@@ -103,7 +103,7 @@ GitHub blocks any file over **100 MB** and warns above 50 MB, so keep clips to
   once they drop below 25%. That gap stops the flicker while a phone is scrolled.
 - Clips are muted and looping, and carry no audio.
 - Playback stops when the tab goes to the background and resumes on return.
-- Honours `prefers-reduced-motion`.
+- Honors `prefers-reduced-motion`.
 
 ---
 
@@ -127,7 +127,7 @@ Then open `http://127.0.0.1:8777`.
 
 Everything is in `index.html` — content and styles in one file.
 
-- **Colours:** the `:root` block at the top of the `<style>` tag.
+- **Colors:** the `:root` block at the top of the `<style>` tag.
 - **Steps:** the `<article class="step">` blocks in the `#workflow` section.
 - **Chart:** the `data-w` attribute on each `.fill` is the bar width as a percentage
   of the top video. Update the numbers when you re-check performance.
