@@ -46,72 +46,87 @@ Either way the result is identical for the visitor: a normal public website.
 
 ---
 
-## Adding your screen recordings
+## Filling the 12 slots
 
-Each of the 12 steps has an empty video slot. Drop a file into `videos/` with the
-matching name and it appears automatically — no code change needed.
+Every step has an empty slot. **Screenshots are the easy path** — no editing, no
+encoding, no waiting. Drop a file in and it appears; no code change needed.
 
 ```
-videos/step-01.mp4    Rough cut
-videos/step-02.mp4    Remove silence
-videos/step-03.mp4    Colour correction & grading
-videos/step-04.mp4    Download b-roll
-videos/step-05.mp4    Motion graphics
-videos/step-06.mp4    Lay in b-roll & effects
-videos/step-07.mp4    Refine clip by clip
-videos/step-08.mp4    Music & ducking
-videos/step-09.mp4    Rewatch & export
-videos/step-10.mp4    Upload & package
-videos/step-11.mp4    Thumbnail
-videos/step-12.mp4    Blog post
+images/step-01.png    Rough cut
+images/step-02.png    Remove silence
+images/step-03.png    Colour correction & grading
+images/step-04.png    Download b-roll
+images/step-05.png    Motion graphics
+images/step-06.png    Lay in b-roll & effects
+images/step-07.png    Refine clip by clip
+images/step-08.png    Music & ducking
+images/step-09.png    Rewatch & export
+images/step-10.png    Upload & package
+images/step-11.png    Thumbnail
+images/step-12.png    Blog post
 ```
 
-If a file is missing, the striped blue placeholder stays — the page never breaks.
-Add them one at a time as you record.
+`.jpg` works too — the page checks for `.png` first, then `.jpg`.
 
-### Encoding the clips
+Screenshots are shown whole, never cropped, and **tapping one opens it full
+screen**, because editing UI is unreadable at phone width.
 
-The clips are **silent** — there is no sound control on the page, so strip the audio
-when you encode. That also makes the files considerably smaller.
+If a slot has no file, the striped blue placeholder stays and the page carries
+on. Add them one at a time.
 
-GitHub has a **100 MB hard limit per file** and warns above 50 MB. Aim for 15–30 seconds
-at 1280×720, which lands around 5–15 MB each.
+### Taking the screenshots
+
+**Win + Shift + S** captures a region straight to the clipboard, then paste and
+save. Anything that produces a PNG or JPG is fine.
+
+Grab the part of the screen that makes the point — the timeline, the effect
+panel, the export dialog — not the whole desktop. A tighter shot reads better
+on a phone.
+
+> The page is public. Check each shot for file paths, client names and anything
+> else you would not want a stranger reading.
+
+### If a PNG gets large
+
+Screenshots of dense UI can run several MB. Anything over about 500 KB is worth
+shrinking:
 
 ```bash
-ffmpeg -i raw-recording.mp4 -t 30 -vf "scale=1280:-2,fps=30" \
-  -c:v libx264 -crf 26 -preset slow -an -movflags +faststart videos/step-01.mp4
+ffmpeg -i images/step-01.png -vf "scale='min(1600,iw)':-2" -q:v 4 images/step-01.jpg
 ```
 
-- `-an` — strips the audio track (required, the page plays muted)
-- `-t 30` — trims to the first 30 seconds; drop it to keep the whole recording
-- `-movflags +faststart` — lets the browser start playing before the full download
+Then delete the PNG — the page prefers PNG, so leaving both means the big one wins.
 
-Batch the whole folder:
+### Video instead (optional)
+
+A slot with no screenshot falls back to `videos/step-NN.mp4` if one is there.
+Clips autoplay muted when scrolled into view and must be silent:
 
 ```bash
-for f in raw/*.mp4; do
-  ffmpeg -i "$f" -vf "scale=1280:-2,fps=30" -c:v libx264 -crf 26 -preset slow \
-    -an -movflags +faststart "videos/$(basename "$f")"
-done
+ffmpeg -i raw-recording.mp4 -t 30 -vf "scale=1280:-2,fps=30"   -c:v libx264 -crf 26 -preset slow -an -movflags +faststart videos/step-01.mp4
 ```
 
-> If a clip ends up over 100 MB, shorten it or raise `-crf` — GitHub will reject the push otherwise.
+GitHub blocks any file over **100 MB** and warns above 50 MB, so keep clips to
+15-30 seconds.
 
 ---
 
 ## Playback behaviour
 
-- Clips autoplay when they scroll past 55% visible, and pause once they drop below 25%.
-  That gap stops the flicker while a phone is being scrolled.
-- Everything is muted and looping — the clips carry no audio.
-- Everything pauses when the browser tab goes to the background.
+- Screenshots load as soon as the page does, shown whole and never cropped.
+  Tapping one opens it full screen; Escape or a tap anywhere closes it.
+- Clips (if you use any) autoplay when they scroll past 55% visible and pause
+  once they drop below 25%. That gap stops the flicker while a phone is scrolled.
+- Clips are muted and looping, and carry no audio.
+- Playback stops when the tab goes to the background and resumes on return.
 - Honours `prefers-reduced-motion`.
 
 ---
 
 ## Previewing locally
 
-Relative paths need a server — double-clicking `index.html` will not load `videos/` or `assets/`.
+Relative paths need a server. Double-clicking `index.html` will not load `images/`,
+`videos/` or `assets/`.
 
 ```bash
 python -m http.server 8777
@@ -119,8 +134,8 @@ python -m http.server 8777
 
 Then open `http://127.0.0.1:8777`.
 
-> Until all 12 clips are in place you will see 404s in the browser console — one per missing
-> file. That is how the page detects what exists; it is not an error.
+> Until all 12 slots are filled you will see 404s in the browser console, a few per
+> empty slot. That is how the page detects what exists; it is not an error.
 
 ---
 
