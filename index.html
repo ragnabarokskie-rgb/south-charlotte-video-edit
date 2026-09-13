@@ -993,7 +993,20 @@ footer .mono{font-size:11px; color:var(--ink-3); margin-bottom:10px; display:blo
           var v = s.querySelector('video');
           if (v && !v.paused) v.pause();
         });
+        return;
       }
+      /* Coming back to the tab: the observer will not fire again on its own
+         because nothing has scrolled, so restart whatever is on screen. */
+      slots.forEach(function (s) {
+        var v = s.querySelector('video');
+        if (!v || !v.paused) return;
+        var r = s.getBoundingClientRect();
+        var visible = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
+        if (r.height > 0 && visible / r.height >= 0.55) {
+          var p = v.play();
+          if (p && p.catch) p.catch(function () {});
+        }
+      });
     });
 
     /* -------------------------------------------------------
