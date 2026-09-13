@@ -46,61 +46,45 @@ Either way the result is identical for the visitor: a normal public website.
 
 ---
 
-## Filling the 12 slots
+## The 12 slots
 
-Every step has an empty slot. **Screenshots are the easy path** — no editing, no
-encoding, no waiting. Drop a file in and it appears; no code change needed.
+All twelve are filled with screenshots, built from the raw grabs in
+`Desktop/1 Testing/photos` and stored here as `images/step-01.jpg` ... `step-12.jpg`.
 
+Each one is a 1920x1080 card: the screenshot is trimmed of dead white or black
+border, scaled as large as it will go, and the leftover space filled with a
+blurred, darkened copy of the shot itself. That keeps every card the same shape
+whether the source was ultra-wide (the Envato grab is 2.8:1) or nearly square
+(two of the Premiere grabs are 1:1), without ever cropping the content.
+
+Screenshots are shown whole and **tapping one opens it full screen**, because
+editing UI is unreadable at phone width.
+
+Total 2.7 MB across twelve images, lazy-loaded, so only what you scroll past
+is downloaded.
+
+### Replacing one
+
+Drop a new file at `images/step-NN.jpg` (or `.png` — the page checks `.jpg`
+first, then `.png`) and push. If a slot has no file at all, the striped blue
+placeholder stays and the page carries on.
+
+To rebuild a card from a fresh grab with the same trim-and-fill treatment:
+
+```bash
+python scripts/build_images.py
 ```
-images/step-01.png    Rough cut
-images/step-02.png    Remove silence
-images/step-03.png    Colour correction & grading
-images/step-04.png    Download b-roll
-images/step-05.png    Motion graphics
-images/step-06.png    Lay in b-roll & effects
-images/step-07.png    Refine clip by clip
-images/step-08.png    Music & ducking
-images/step-09.png    Rewatch & export
-images/step-10.png    Upload & package
-images/step-11.png    Thumbnail
-images/step-12.png    Blog post
-```
 
-`.jpg` works too — the page checks for `.png` first, then `.jpg`.
-
-Screenshots are shown whole, never cropped, and **tapping one opens it full
-screen**, because editing UI is unreadable at phone width.
-
-If a slot has no file, the striped blue placeholder stays and the page carries
-on. Add them one at a time.
-
-### Taking the screenshots
-
-**Win + Shift + S** captures a region straight to the clipboard, then paste and
-save. Anything that produces a PNG or JPG is fine.
-
-Grab the part of the screen that makes the point — the timeline, the effect
-panel, the export dialog — not the whole desktop. A tighter shot reads better
-on a phone.
+That reads every `N description.png` in the photos folder, uses the leading
+number as the step number, and writes the cards into `images/`.
 
 > The page is public. Check each shot for file paths, client names and anything
 > else you would not want a stranger reading.
 
-### If a PNG gets large
-
-Screenshots of dense UI can run several MB. Anything over about 500 KB is worth
-shrinking:
-
-```bash
-ffmpeg -i images/step-01.png -vf "scale='min(1600,iw)':-2" -q:v 4 images/step-01.jpg
-```
-
-Then delete the PNG — the page prefers PNG, so leaving both means the big one wins.
-
 ### Video instead (optional)
 
-A slot with no screenshot falls back to `videos/step-NN.mp4` if one is there.
-Clips autoplay muted when scrolled into view and must be silent:
+A slot with no screenshot falls back to `videos/step-NN.mp4`. Clips autoplay
+muted when scrolled into view and must be silent:
 
 ```bash
 ffmpeg -i raw-recording.mp4 -t 30 -vf "scale=1280:-2,fps=30"   -c:v libx264 -crf 26 -preset slow -an -movflags +faststart videos/step-01.mp4
